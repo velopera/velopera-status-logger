@@ -1,22 +1,25 @@
+import { config } from "dotenv";
 import { logger } from "shared-data";
-import { MQTTController } from "./controllers/MQTTController";
+import { MqttController } from "./controllers/MqttController";
 import { Database } from "./database/db";
+
+// Load environment variables from the .env file
+config();
 
 export class Main {
   async run() {
-    // Log the start of the main run
     logger.info("Main run...");
 
     try {
-      // Fetch devices from the database
+      // Initialize database and populate device cache
       const db = new Database();
+      logger.debug("Populating device cache");
       const devices = await db.getDevices();
-      // Log the retrieved devices
       console.table(devices);
       logger.info(`Devices: ${[...devices]}`);
 
       // Initialize MQTTController with the retrieved devices
-      new MQTTController(devices);
+      new MqttController(devices);
     } catch (error) {
       logger.error("Initialization error:", error);
     }

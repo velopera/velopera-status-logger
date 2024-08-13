@@ -1,9 +1,6 @@
-import { config } from "dotenv";
 import { createPool, RowDataPacket } from "mysql2/promise";
+import { logger } from "shared-data";
 import { Device } from "../helpers/device";
-
-// Load environment variables from the .env file
-config();
 
 // Database class that handles MySQL interactions
 export class Database {
@@ -21,11 +18,11 @@ export class Database {
     });
   }
 
-  // Method to fetch devices from the database
+  // Fetch and return a map of devices from the database
   async getDevices(): Promise<Map<string, Device>> {
     const connection = await this.pool.getConnection();
     try {
-      // Execute a SQL query to retrieve device information
+      // Query to retrieve device information from the database
       const [rows] = await connection.query<RowDataPacket[]>(
         "SELECT imei, veloId FROM iot_device"
       );
@@ -35,7 +32,11 @@ export class Database {
         deviceMap.set(row.imei, new Device(row.imei, row.veloId));
       });
       return deviceMap;
+    } catch (error) {
+      logger.error("Database error:", error); // Logging the error
+      throw error; // Re-throwing the error for higher level handling
     } finally {
+      // Release the connection back to the pool
       connection.release();
     }
   }

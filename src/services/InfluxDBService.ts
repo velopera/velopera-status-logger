@@ -1,9 +1,5 @@
-import { config } from "dotenv";
 import { InfluxDB } from "influx";
 import { logger } from "shared-data";
-
-// Load environment variables from the .env file
-config();
 
 // InfluxDB service class for communication with InfluxDB
 export class InfluxDBService {

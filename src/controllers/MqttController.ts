@@ -1,17 +1,17 @@
 import { logger } from "shared-data";
 import { Device } from "../helpers/device";
-import { MQTTService } from "../services/MQTTService";
+import { MqttService } from "../services/MqttService";
 
 // Controller class for MQTT communication
-export class MQTTController {
-  private mqttService: MQTTService;
-  private devices = new Map<string, Device>();
+export class MqttController {
+  private mqttService: MqttService;
+  private devices: Map<string, Device>;
 
-  constructor(dev: Map<string, Device>) {
-    this.devices = dev;
-    this.mqttService = new MQTTService();
+  constructor(devices: Map<string, Device>) {
+    this.devices = devices;
+    this.mqttService = new MqttService();
 
-    // Handle MQTT service events
+    // Event listeners for MQTT service events.
     this.mqttService.event.on("connected", () => {
       this.onConnected();
     });
@@ -23,21 +23,20 @@ export class MQTTController {
     });
   }
 
-  // Handle MQTT connection event
+  // Handles the connection event by subscribing to topics.
   private onConnected() {
-    // Subscribe to MQTT topic for device status
     this.mqttService.subscribe("ind/#");
     logger.debug("mqttConnected and subscribed to ind/#");
   }
 
-  // Handle MQTT disconnection event
+  // Handles the disconnection event.
   private onDisconnected() {
     logger.warn("mqttDisconnected");
   }
 
   // Handle MQTT message event
   private onMessage(topic: string, payload: Buffer) {
-    let tpc = topic.split("/"); // tpc[1] = imei
+    let tpc = topic.split("/");
     // Call the 'handle' method of the corresponding device
     this.devices.get(tpc[1])?.handle(topic, payload);
   }

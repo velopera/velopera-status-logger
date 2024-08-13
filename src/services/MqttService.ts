@@ -1,13 +1,9 @@
-import { config } from "dotenv";
 import * as mqtt from "mqtt";
 import { logger } from "shared-data";
 import { EventEmitter } from "stream";
 
-// Load environment variables from the .env file
-config();
-
 // MQTT service class for communication with MQTT broker
-export class MQTTService {
+export class MqttService {
   private client: mqtt.MqttClient;
   event: EventEmitter = new EventEmitter();
 
