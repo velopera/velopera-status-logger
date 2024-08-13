@@ -13,7 +13,17 @@ export class Device extends MessageParser {
     return Date.now() * 1000000;
   }
 
-  protected handleParsedData(data: any): void {
+  protected handleParsedStatus(data: any): void {
+    logger.debug(`||| Influxing Data ||| \n${JSON.stringify(data)}`);
+    this.influxDBService.writeToInflux(
+      this.veloId,
+      this.imei,
+      this.getNanoseconds(),
+      data // Payload content
+    );
+  }
+
+  protected handleParsedLogin(data: any): void {
     logger.debug(`||| Influxing Data ||| \n${JSON.stringify(data)}`);
     this.influxDBService.writeToInflux(
       this.veloId,
