@@ -32,4 +32,14 @@ export class Device extends MessageParser {
       data // Payload content
     );
   }
+
+  protected handleParsedGps(data: any): void {
+    logger.debug(`||| Influxing Data ||| \n${JSON.stringify(data)}`);
+    this.influxDBService.writeToInflux(
+      this.veloId,
+      this.imei,
+      this.getNanoseconds(),
+      data // Payload content
+    );
+  }
 }
