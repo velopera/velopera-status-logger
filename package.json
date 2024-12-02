@@ -11,24 +11,24 @@
   "author": "Ferman GÜZEL",
   "license": "ISC",
   "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.10.4",
-    "@types/ws": "^8.5.10",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "eslint": "^8.55.0",
-    "nodemon": "^3.0.2",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.1",
+    "@types/ws": "^8.5.13",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
+    "eslint": "^9.16.0",
+    "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.3"
+    "typescript": "^5.7.2"
   },
   "dependencies": {
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.5",
     "envalid": "^8.0.0",
     "express": "^4.21.1",
     "influx": "^5.9.3",
-    "mqtt": "^5.3.3",
-    "mysql2": "^3.6.5",
+    "mqtt": "^5.10.3",
+    "mysql2": "^3.11.5",
     "shared-data": "git@github.com:velopera/shared-data.git",
-    "winston": "^3.11.0",
-    "winston-daily-rotate-file": "^4.7.1"
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
   }
 }
