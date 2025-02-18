@@ -1,12 +1,15 @@
 import { MessageParser, logger } from "shared-data";
 import { InfluxDBService } from "../services/InfluxDBService";
+import { MatrixService } from "../services/MatrixService";
 
 export class Device extends MessageParser {
   private influxDBService: InfluxDBService;
+  private matrixService: MatrixService;
 
   constructor(public imei: string, public veloId: string) {
     super(imei, veloId);
     this.influxDBService = new InfluxDBService();
+    this.matrixService = new MatrixService();
   }
 
   private getNanoseconds(): number {
@@ -21,6 +24,9 @@ export class Device extends MessageParser {
       this.getNanoseconds(),
       data // Payload content
     );
+
+    const message = `📡 [Status] IMEI: ${this.imei}, VeloID: ${this.veloId}, Data: ${JSON.stringify(data)}`;
+    this.matrixService.sendMessage(message);
   }
 
   protected handleParsedLogin(data: any): void {
@@ -31,6 +37,10 @@ export class Device extends MessageParser {
       this.getNanoseconds(),
       data // Payload content
     );
+
+    logger.debug(`||| Messaging to Matrix ||| \n${JSON.stringify(data)}`);
+    const message = `🔑 [Login] IMEI: ${this.imei}, VeloID: ${this.veloId}, Data: ${JSON.stringify(data)}`;
+    this.matrixService.sendMessage(message);
   }
 
   protected handleParsedGps(data: any): void {
@@ -41,5 +51,9 @@ export class Device extends MessageParser {
       this.getNanoseconds(),
       data // Payload content
     );
+
+    logger.debug(`||| Messaging to Matrix ||| \n${JSON.stringify(data)}`);
+    const message = `📍 [GPS] IMEI: ${this.imei}, VeloID: ${this.veloId}, Data: ${JSON.stringify(data)}`;
+    this.matrixService.sendMessage(message);
   }
 }
