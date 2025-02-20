@@ -1,5 +1,5 @@
-import axios from "axios"
-import { logger } from "shared-data"
+import axios from "axios";
+import { logger } from "shared-data";
 
 export class MatrixService {
     private matrixHost: string;
@@ -63,5 +63,65 @@ export class MatrixService {
             logger.error("Matrix message sent failed: ", error);
             return false;
         }
+    }
+
+    async formatAndSendMessage(type: string, imei: string, veloId: string, data: any): Promise<boolean> {
+        let formattedData = "";
+
+        switch (type) {
+            case "status":
+                formattedData = `
+                    📡 [Status]
+                    📱 IMEI: ${imei}
+                    🚲️ VeloID: ${veloId}
+                    -------------------------
+                    ⚡  Battery Voltage: ${data.aku_voltage}V
+                    🧭 Accelerometer (X, Y, Z): (${data.comp_x}, ${data.comp_y}, ${data.comp_z})
+                    ⚙️  Gear: ${data.gear}
+                    💧 Humidity: ${data.humidity}%
+                    🚀 Speed: ${data.speed} km/h
+                    🌡️ Temperature: ${data.temperature}°C
+                `.trim();
+                break;
+
+            case "login":
+                formattedData = `
+                    🔑 [Login]
+                    📱 IMEI: ${imei}
+                    🚲️ VeloID: ${veloId}
+                    -------------------------
+                    🌐 Network: ${data.networkStatus === "online" ? " 🟢 Online" : " 🔴 Offline"}
+                    📶 RSRP: ${data.rsrp}
+                    🌍 MCC: ${data.mcc}, MNC: ${data.mnc}
+                    🏢 CID: ${data.cid}, Area Code: ${data.areaCode}
+                    📡 Band: ${data.band}
+                    🖥️ Modem: ${data.modem}
+                    🔄 Firmware: ${data.fw}
+                    🆔 ICCID: ${data.iccid}
+                `.trim();
+                break;
+
+            case "gps":
+                formattedData = `
+                    📍 [GPS]
+                    📱 IMEI: ${imei}
+                    🚲️ VeloID: ${veloId}
+                    -------------------------
+                    🌍 Location: ${data.latitude}, ${data.longitude}
+                    📏 Altitude: ${data.altitude}m
+                    🎯 Accuracy: ±${data.accuracy}m
+                    🚀 Speed: ${data.speed} km/h (±${data.speedAccuracy} km/h)
+                    🧭 Heading: ${data.heading}°
+                    📡 PDOP: ${data.pdop} | HDOP: ${data.hdop} | VDOP: ${data.vdop} | TDOP: ${data.tdop}
+                    🆔 Measurement ID: ${data.measId}
+                `.trim();
+                break;
+
+            default:
+                logger.warn(`Unknown message type: ${type}`);
+                return false;
+        }
+
+        return this.sendMessage(formattedData);
     }
 }
