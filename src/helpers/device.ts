@@ -1,13 +1,16 @@
+import { EventEmitter } from "events";
 import { MessageParser, logger } from "shared-data";
 import { InfluxDBService } from "../services/InfluxDBService";
 import { MatrixService } from "../services/MatrixService";
 
 export class Device extends MessageParser {
+  private eventEmitter: EventEmitter;
   private influxDBService: InfluxDBService;
   private matrixService: MatrixService;
 
   constructor(public imei: string, public veloId: string) {
     super(imei, veloId);
+    this.eventEmitter = new EventEmitter();
     this.influxDBService = new InfluxDBService();
     this.matrixService = new MatrixService();
   }
@@ -26,7 +29,6 @@ export class Device extends MessageParser {
     );
 
     logger.debug(`||| Messaging Status to Matrix ||| \n${JSON.stringify(data)}`);
-
     const formattedData = `
       📡 [Status]
       📱 IMEI: ${this.imei}
@@ -39,8 +41,10 @@ export class Device extends MessageParser {
       🚀 Speed: ${data.speed} km/h
       🌡️ Temperature: ${data.temperature}°C
     `.trim();
-
     await this.matrixService.sendMessage(formattedData);
+
+    logger.debug(`||| Emitting Status Data Event ||| \n${JSON.stringify(data)}`);
+    this.eventEmitter.emit("deviceStatus", data);
   }
 
   protected async handleParsedLogin(data: any): Promise<void> {
@@ -53,7 +57,6 @@ export class Device extends MessageParser {
     );
 
     logger.debug(`||| Messaging Login to Matrix ||| \n${JSON.stringify(data)}`);
-
     const formattedData = `
       🔑 [Login]
       📱 IMEI: ${this.imei}
@@ -68,8 +71,10 @@ export class Device extends MessageParser {
       🔄 Firmware: ${data.fw}
       🆔 ICCID: ${data.iccid}
     `.trim();
-
     await this.matrixService.sendMessage(formattedData);
+
+    logger.debug(`||| Emitting Login Data Event ||| \n${JSON.stringify(data)}`);
+    this.eventEmitter.emit("deviceLogin", data);
   }
 
   protected async handleParsedGps(data: any): Promise<void> {
@@ -82,7 +87,6 @@ export class Device extends MessageParser {
     );
 
     logger.debug(`||| Messaging GPS to Matrix ||| \n${JSON.stringify(data)}`);
-
     const formattedData = `
       📍 [GPS]
       📱 IMEI: ${this.imei}
@@ -96,7 +100,21 @@ export class Device extends MessageParser {
       📡 PDOP: ${data.pdop} | HDOP: ${data.hdop} | VDOP: ${data.vdop} | TDOP: ${data.tdop}
       🆔 Measurement ID: ${data.measId}
     `.trim();
-
     await this.matrixService.sendMessage(formattedData);
+
+    logger.debug(`||| Emitting GPS Data Event ||| \n${JSON.stringify(data)}`);
+    this.eventEmitter.emit("deviceGps", data);
+  }
+
+  // Method to allow external listeners to subscribe to events
+  public on(event: string, listener: (...args: any[]) => void): this {
+    this.eventEmitter.on(event, listener);
+    return this;
+  }
+
+  // Method to allow external listeners to unsubscribe from events
+  public off(event: string, listener: (...args: any[]) => void): this {
+    this.eventEmitter.off(event, listener);
+    return this;
   }
 }
