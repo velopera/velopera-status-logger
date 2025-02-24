@@ -1,34 +1,61 @@
-import axios from "axios";
+import { MatrixClient, MatrixEvent, RoomMemberEvent, MemoryStore } from "matrix-js-sdk";
 import { logger } from "shared-data";
 
+type MessageType = "status" | "login" | "gps";
+
+type MatrixConfig = {
+    host: string;
+    user: string;
+    pass: string;
+    room: string;
+};
+
 export class MatrixService {
-    private matrixHost: string;
-    private matrixUser: string;
-    private matrixPass: string;
-    private matrixRoom: string;
-    private accessToken: string | null = null;
+    private client: MatrixClient;
+    private config: MatrixConfig;
 
     constructor() {
-        this.matrixHost = process.env.MATRIX_HOST!;
-        this.matrixUser = process.env.MATRIX_USER!;
-        this.matrixPass = process.env.MATRIX_PASS!;
-        this.matrixRoom = process.env.MATRIX_ROOM!;
+        this.config = {
+            host: process.env.MATRIX_HOST!,
+            user: process.env.MATRIX_USER!,
+            pass: process.env.MATRIX_PASS!,
+            room: process.env.MATRIX_ROOM!,
+        };
+
+        this.client = new MatrixClient({
+            baseUrl: this.config.host,
+            accessToken: "",
+            userId: this.config.user,
+            store: new MemoryStore(),
+        });
+
+        this.client.on(RoomMemberEvent.Membership, async (event: MatrixEvent, member) => {
+            if (member.membership === "invite" && member.userId === this.config.user) {
+                const roomId = event.getRoomId();
+                if (roomId) {
+                    await this.client.joinRoom(roomId);
+                    logger.info(`Joined room: ${roomId}`);
+                }
+            }
+        });
     }
 
-    // Log in to Matrix and get access token
     async login(): Promise<boolean> {
         try {
-            const response = await axios.post(`${this.matrixHost}/_matrix/client/v3/login`,
-                {
-                    type: "m.login.password",
-                    identifier: {
-                        type: "m.id.user",
-                        user: this.matrixUser,
-                    },
-                    password: this.matrixPass,
-                });
+            const response = await this.client.loginRequest({
+                type: "m.login.password",
+                identifier: { type: "m.id.user", user: this.config.user },
+                password: this.config.pass,
+            });
 
-            this.accessToken = response.data.access_token;
+            this.client = new MatrixClient({
+                baseUrl: this.config.host,
+                accessToken: response.access_token,
+                userId: response.user_id,
+                store: new MemoryStore(),
+            });
+
+            await this.client.startClient();
             logger.info("Matrix login successful");
             return true;
         } catch (error) {
@@ -37,35 +64,24 @@ export class MatrixService {
         }
     }
 
-    // Send message to Matrix room
     async sendMessage(message: string): Promise<boolean> {
-        if (!this.accessToken) {
-            logger.warn("No Matrix access token, attempting login...");
-            const loggedIn = await this.login();
-            if (!loggedIn) return false;
-        }
-
         try {
-            // Generate unique txnId for each message
-            const txnId = new Date().getTime();
-            await axios.put(`${this.matrixHost}/_matrix/client/v3/rooms/${encodeURIComponent(this.matrixRoom)}/send/m.room.message/${txnId}`,
-                {
-                    msgtype: "m.text",
-                    body: message,
-                },
-                {
-                    headers: { Authorization: `Bearer ${this.accessToken}` },
-                }
-            );
+            if (!this.client.getAccessToken()) {
+                logger.warn("No Matrix access token, attempting login...");
+                const loggedIn = await this.login();
+                if (!loggedIn) return false;
+            }
+
+            await this.client.sendTextMessage(this.config.room, message);
             logger.info("Matrix message sent successfully");
             return true;
         } catch (error) {
-            logger.error("Matrix message sent failed: ", error);
+            logger.error("Matrix message send failed: ", error);
             return false;
         }
     }
 
-    async formatAndSendMessage(type: string, imei: string, veloId: string, data: any): Promise<boolean> {
+    async formatAndSendMessage(type: MessageType, imei: string, veloId: string, data: any): Promise<boolean> {
         let formattedData = "";
 
         switch (type) {
@@ -121,7 +137,6 @@ export class MatrixService {
                 logger.warn(`Unknown message type: ${type}`);
                 return false;
         }
-
         return this.sendMessage(formattedData);
     }
 }
