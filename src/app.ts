@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { logger } from "shared-data";
 import { MqttController } from "./controllers/MqttController";
+import { MatrixService } from "./services/MatrixService";
 import { Database } from "./database/db";
 
 // Load environment variables from the .env file
@@ -20,6 +21,10 @@ export class Main {
 
       // Initialize MQTTController with the retrieved devices
       new MqttController(devices);
+
+      // Initialize and start listening for Matrix messages
+      const matrixService = new MatrixService();
+      matrixService.listenForMessages();
     } catch (error) {
       logger.error("Initialization error:", error);
     }
