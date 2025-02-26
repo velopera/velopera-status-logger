@@ -72,6 +72,11 @@ export class MatrixService {
             // Start the client after successful login
             await this.client.startClient();
             logger.info("Matrix login successful");
+
+            // Join the configured room after login
+            await this.client.joinRoom(this.config.room);
+            logger.info(`Successfully joined room: ${this.config.room}`);
+
             return true;
         } catch (error) {
             logger.error("Matrix login failed", error);
