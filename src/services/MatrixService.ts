@@ -1,4 +1,4 @@
-import { MatrixClient, MatrixEvent, RoomMemberEvent, MemoryStore } from "matrix-js-sdk";
+import { MatrixClient, MatrixEvent, RoomMemberEvent } from "matrix-js-sdk";
 import { logger } from "shared-data";
 
 type MessageType = "status" | "login" | "gps";
@@ -8,6 +8,7 @@ type MatrixConfig = {
     user: string;
     pass: string;
     room: string;
+    deviceId: string;
 };
 
 export class MatrixService {
@@ -20,18 +21,19 @@ export class MatrixService {
             user: process.env.MATRIX_USER!,
             pass: process.env.MATRIX_PASS!,
             room: process.env.MATRIX_ROOM!,
+            deviceId: process.env.MATRIX_DEVICE!,
         };
 
-        // Initializing the client with an empty access token
+        // Initialize the client
         this.client = new MatrixClient({
             baseUrl: this.config.host,
             accessToken: "",
             userId: this.config.user,
-            store: new MemoryStore(),
-            deviceId: "velopera",
         });
+    }
 
-        // Listening for membership changes to join the room if invited
+    // Separate method to set up event handlers
+    private setupEventHandlers() {
         this.client.on(RoomMemberEvent.Membership, async (event: MatrixEvent, member) => {
             if (member.membership === "invite" && member.userId === this.config.user) {
                 const roomId = event.getRoomId();
@@ -46,36 +48,27 @@ export class MatrixService {
     // Login and retrieve access token
     private async login(): Promise<boolean> {
         try {
-            // If the client already has an access token, no need to login again
             if (this.client.getAccessToken()) {
                 logger.info("Already logged in.");
                 return true;
             }
 
-            // Perform login request
             const response = await this.client.loginRequest({
                 type: "m.login.password",
                 identifier: { type: "m.id.user", user: this.config.user },
                 password: this.config.pass,
-                deviceId: "velopera",
+                deviceId: this.config.deviceId,
             });
 
-            // Update the client with the obtained access token
-            this.client = new MatrixClient({
-                baseUrl: this.config.host,
-                accessToken: response.access_token,
-                userId: response.user_id,
-                store: new MemoryStore(),
-                deviceId: "velopera",
-            });
+            // Update access token instead of creating a new client
+            this.client.setAccessToken(response.access_token);
 
-            // Start the client after successful login
+            // Set up event handlers after login
+            this.setupEventHandlers();
+
+            // Start the client
             await this.client.startClient();
             logger.info("Matrix login successful");
-
-            // Join the configured room after login
-            await this.client.joinRoom(this.config.room);
-            logger.info(`Successfully joined room: ${this.config.room}`);
 
             return true;
         } catch (error) {
