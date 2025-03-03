@@ -24,16 +24,17 @@ export class MatrixService {
             deviceId: process.env.MATRIX_DEVICE!,
         };
 
-        // Initialize the client
+        // Initialize the client with deviceId
         this.client = new MatrixClient({
             baseUrl: this.config.host,
             accessToken: "",
             userId: this.config.user,
+            deviceId: this.config.deviceId,
         });
     }
 
-    // Separate method to set up event handlers
-    private setupEventHandlers() {
+    // Provides automatic joining when invited
+    private joinRoom() {
         this.client.on(RoomMemberEvent.Membership, async (event: MatrixEvent, member) => {
             if (member.membership === "invite" && member.userId === this.config.user) {
                 const roomId = event.getRoomId();
@@ -43,6 +44,17 @@ export class MatrixService {
                 }
             }
         });
+    }
+
+    // Initialize Rust-based end-to-end encryption
+    private async initRustCrypto(): Promise<void> {
+        try {
+            await this.client.initRustCrypto();
+            logger.info("Rust-based end-to-end encryption initialized successfully");
+        } catch (error) {
+            logger.error("Failed to initialize Rust-based end-to-end encryption", error);
+            throw error;
+        }
     }
 
     // Login and retrieve access token
@@ -60,11 +72,14 @@ export class MatrixService {
                 deviceId: this.config.deviceId,
             });
 
-            // Update access token instead of creating a new client
+            // Update access token
             this.client.setAccessToken(response.access_token);
 
-            // Set up event handlers after login
-            this.setupEventHandlers();
+            // Initialize Rust-based end-to-end encryption
+            await this.initRustCrypto();
+
+            // Set up join room after login
+            this.joinRoom();
 
             // Start the client
             await this.client.startClient();
