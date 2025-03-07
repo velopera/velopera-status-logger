@@ -27,7 +27,6 @@ export class InfluxDBService {
       fields: data,
       timestamp: timestamp,
     };
-
     try {
       await this.influxDB.writePoints([point]);
       logger.info("Data written to InfluxDB", JSON.stringify(point));
