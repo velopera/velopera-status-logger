@@ -21,21 +21,16 @@ export class InfluxDBService {
     timestamp: number,
     data: any
   ) {
-    let pt = [];
     const point = {
       measurement: "velopera",
       tags: { veloId, imei },
-      fields: {
-        /*temperature: degree*/
-      },
+      fields: data,
       timestamp: timestamp,
     };
-    Object.assign(point.fields, data);
-    pt.push(point);
 
     try {
       await this.influxDB.writePoints([point]);
-      logger.info("Data written to InfluxDB", JSON.stringify(pt));
+      logger.info("Data written to InfluxDB", JSON.stringify(point));
     } catch (error) {
       logger.warn("Error writing to InfluxDB", error);
     }
