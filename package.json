@@ -20,6 +20,7 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
+    "@matrix-org/matrix-sdk-crypto-wasm": "^14.0.1",
     "dotenv": "^16.4.7",
     "envalid": "^8.0.0",
     "express": "^4.21.2",
