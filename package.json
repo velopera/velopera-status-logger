@@ -16,7 +16,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^5.0.1",
-    "@types/node": "^22.13.10",
+    "@types/node": "^22.13.14",
     "@types/ws": "^8.18.0",
     "eslint": "^9.23.0",
     "git-command-line": "^0.1.5",
