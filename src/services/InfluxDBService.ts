@@ -15,12 +15,7 @@ export class InfluxDBService {
   }
 
   // Write data to InfluxDB
-  async writeToInflux(
-    veloId: string,
-    imei: string,
-    timestamp: number,
-    data: any
-  ) {
+  async writeToInflux(veloId: string, imei: string, timestamp: number, data: any) {
     const point = {
       measurement: "velopera",
       tags: { veloId, imei },
