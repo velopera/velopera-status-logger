@@ -17,7 +17,7 @@
   "devDependencies": {
     "@types/express": "^5.0.1",
     "@types/node": "^22.14.0",
-    "@types/ws": "^8.18.0",
+    "@types/ws": "^8.18.1",
     "eslint": "^9.24.0",
     "git-command-line": "^0.1.5",
     "git-describe": "^4.1.1",
