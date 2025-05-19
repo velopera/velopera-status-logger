@@ -132,4 +132,5 @@ dist
 # .sh
 *.sh*
 
-version_info.ts
+# generated version info
+src/version_info.ts
