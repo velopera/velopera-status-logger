@@ -131,3 +131,5 @@ dist
 
 # .sh
 *.sh*
+
+version_info.ts
