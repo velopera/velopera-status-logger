@@ -16,7 +16,7 @@
   "author": "Ferman GÜZEL",
   "license": "ISC",
   "devDependencies": {
-    "@types/express": "^5.0.1",
+    "@types/express": "^5.0.2",
     "@types/node": "^22.15.19",
     "@types/ws": "^8.18.1",
     "@typescript-eslint/parser": "^8.32.1",
