@@ -19,7 +19,7 @@
     "@types/express": "^5.0.2",
     "@types/node": "^22.15.21",
     "@types/ws": "^8.18.1",
-    "@typescript-eslint/parser": "^8.32.1",
+    "@typescript-eslint/parser": "^8.33.0",
     "eslint": "^9.27.0",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "fs-extra": "^11.3.0",
