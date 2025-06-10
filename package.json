@@ -34,7 +34,7 @@
     "envalid": "^8.0.0",
     "express": "^5.1.0",
     "influx": "^5.10.0",
-    "mqtt": "^5.13.0",
+    "mqtt": "^5.13.1",
     "mysql2": "^3.14.1",
     "shared-data": "git@github.com:velopera/shared-data.git",
     "winston": "^3.17.0",
