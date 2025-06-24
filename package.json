@@ -20,7 +20,7 @@
     "@types/node": "^24.0.1",
     "@types/ws": "^8.18.1",
     "@typescript-eslint/parser": "^8.34.1",
-    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/eslint-plugin": "^8.35.0",
     "eslint": "^9.29.0",
     "fs-extra": "^11.3.0",
     "git-command-line": "^0.1.5",
