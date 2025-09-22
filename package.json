@@ -33,7 +33,7 @@
     "dotenv": "^17.2.1",
     "envalid": "^8.1.0",
     "express": "^5.1.0",
-    "influx": "^5.10.0",
+    "influx": "^5.11.0",
     "mqtt": "^5.14.0",
     "mysql2": "^3.14.3",
     "shared-data": "git@github.com:velopera/shared-data.git",
