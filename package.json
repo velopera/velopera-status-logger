@@ -35,7 +35,7 @@
     "express": "^5.1.0",
     "influx": "^5.11.0",
     "mqtt": "^5.14.1",
-    "mysql2": "^3.15.2",
+    "mysql2": "^3.15.3",
     "shared-data": "git@github.com:velopera/shared-data.git",
     "winston": "^3.18.3",
     "winston-daily-rotate-file": "^5.0.0"
