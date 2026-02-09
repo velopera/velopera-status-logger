@@ -21,7 +21,7 @@
     "@types/ws": "^8.18.1",
     "@typescript-eslint/parser": "^8.54.0",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.0",
     "fs-extra": "^11.3.3",
     "git-command-line": "^0.1.5",
     "git-describe": "^4.1.1",
@@ -30,12 +30,12 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.2.4",
     "envalid": "^8.1.1",
     "express": "^5.2.1",
     "influx": "^5.12.0",
-    "mqtt": "^5.15.0",
-    "mysql2": "^3.16.2",
+    "mqtt": "^5.14.1",
+    "mysql2": "^3.16.3",
     "shared-data": "git@github.com:velopera/shared-data.git",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0"
