@@ -21,7 +21,7 @@
     "@types/ws": "^8.18.1",
     "@typescript-eslint/parser": "^8.54.0",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.0",
     "fs-extra": "^11.3.3",
     "git-command-line": "^0.1.5",
     "git-describe": "^4.1.1",
