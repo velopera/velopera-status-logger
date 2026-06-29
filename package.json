@@ -17,7 +17,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.0.1",
     "@types/ws": "^8.18.1",
     "@typescript-eslint/parser": "^8.61.1",
     "@typescript-eslint/eslint-plugin": "^8.61.0",
