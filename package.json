@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "dotenv": "^18.0.8",
-    "envalid": "^8.2.0",
+    "envalid": "^9.0.0",
     "express": "^5.2.1",
     "influx": "^5.12.0",
     "mqtt": "^5.16.1",
